@@ -4,6 +4,8 @@ import requests
 
 from django.conf import settings
 
+from experimenter.experiments.models import Experiment
+
 
 def format_bug_body(experiment):
     bug_body = ""
@@ -56,7 +58,9 @@ def make_bugzilla_call(url, data):
     return response_data.get("id", None)
 
 
-def create_experiment_bug(experiment):
+def create_experiment_bug(experiment_id):
+    experiment = Experiment.objects.get(id=experiment_id)
+
     bug_data = {
         "product": "Shield",
         "component": "Shield Study",

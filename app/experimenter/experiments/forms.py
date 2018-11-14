@@ -11,7 +11,7 @@ from django.utils.text import slugify
 
 from experimenter.experiments import bugzilla
 from experimenter.experiments.constants import ExperimentConstants
-from experimenter.experiments.email import send_review_email
+from experimenter.experiments.tasks import send_review_email_task
 from experimenter.experiments.models import (
     Experiment,
     ExperimentComment,
@@ -574,7 +574,7 @@ class ExperimentStatusForm(
             and not experiment.bugzilla_id
         ):
             needs_attention = len(self.cleaned_data.get("attention", "")) > 0
-            send_review_email(experiment, needs_attention)
+            send_review_email_task.delay(experiment.name, experiment.get_absolute_url(), needs_attention)
             messages.add_message(
                 self.request,
                 messages.INFO,
